@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.huskyteers.opmode;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.acmerobotics.roadrunner.Action;
+import com.huskyteers.paths.Paths;
 
 import org.firstinspires.ftc.teamcode.huskyteers.HuskyOpMode;
 
@@ -15,7 +17,9 @@ public class HuskyAuto extends HuskyOpMode {
             return;
 
         while (opModeIsActive() && !isStopRequested()) {
-            //            Actions.runBlocking(Paths.examplePath(drive.actionBuilder(drive.pose)).build());
+            Paths paths = new Paths(Paths.StartPosition.LEFT);
+            drive.setPoseEstimate(paths.startPosition.getCoordinates());
+            paths.examplePath(drive.actionBuilder(drive.pose));
         }
     }
 }

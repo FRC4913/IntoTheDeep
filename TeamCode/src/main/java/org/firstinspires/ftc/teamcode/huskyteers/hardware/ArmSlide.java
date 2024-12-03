@@ -10,16 +10,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class ArmSlide {
     public static final int EXTEND_POSITION = 100;
     public static final int RETRACT_POSITION = 0;
-    final private DcMotor motor;
-
+    final private DcMotor motor1;
+    final private DcMotor motor2;
     public ArmSlide(HardwareMap hardwareMap) {
-        motor = hardwareMap.get(DcMotor.class, "armSlide");
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor1 = hardwareMap.get(DcMotor.class, "armSlide1");
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor2 = hardwareMap.get(DcMotor.class, "armSlide2");
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void setPosition(int position) {
-        motor.setTargetPosition(position);
+        motor1.setTargetPosition(position);
+        motor2.setTargetPosition(position);
     }
 
     public Action extendArm() {
@@ -32,7 +36,7 @@ public class ArmSlide {
                     setPosition(EXTEND_POSITION);
                     initialized = true;
                 }
-                return motor.isBusy();
+                return motor1.isBusy()&& motor2.isBusy();
             }
         };
     }
@@ -47,7 +51,7 @@ public class ArmSlide {
                     setPosition(RETRACT_POSITION);
                     initialized = true;
                 }
-                return motor.isBusy();
+                return motor1.isBusy()&& motor2.isBusy();
             }
         };
     }

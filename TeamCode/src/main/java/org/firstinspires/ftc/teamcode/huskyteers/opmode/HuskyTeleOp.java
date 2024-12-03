@@ -18,11 +18,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class HuskyTeleOp extends HuskyOpMode {
     final private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
-
+    private boolean armSlideExtended;
     @Override
     public void runOpMode() {
         instantiateMotors(new Pose2d(0, 0, 0));
         initVisionPortal();
+        armSlideExtended = false;
 
         waitForStart();
         if (isStopRequested())
@@ -53,7 +54,7 @@ public class HuskyTeleOp extends HuskyOpMode {
             gamepad1Utils.processUpdates(gamepad1);
             gamepad2Utils.processUpdates(gamepad2);
 
-            double speed = (0.35 + 0.5 * gamepad1.left_trigger);
+            double speed = (0.6 + 0.5 * gamepad1.left_trigger);
             if (gamepad1.a) {
                 usingFieldCentric.set(!usingFieldCentric.get());
             }
@@ -65,6 +66,16 @@ public class HuskyTeleOp extends HuskyOpMode {
                 driveRobot(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, speed);
             }
 
+            // Gamepad 2 controls (ArmSlide logic)
+            gamepad2Utils.addRisingEdge("x", (pressed) -> {
+                if (armSlideExtended) {
+                    armSlide.setPosition(ArmSlide.RETRACT_POSITION); // Retract the arm
+                } else {
+                    armSlide.setPosition(ArmSlide.EXTEND_POSITION); // Extend the arm
+                }
+                armSlideExtended = !armSlideExtended; // Toggle the state
+            });
+
             // update running actions
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -73,6 +84,7 @@ public class HuskyTeleOp extends HuskyOpMode {
                     newActions.add(action);
                 }
             }
+
             runningActions = newActions;
 
             dash.sendTelemetryPacket(packet);
